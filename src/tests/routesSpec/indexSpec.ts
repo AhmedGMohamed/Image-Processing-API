@@ -2,6 +2,7 @@ import supertest from "supertest";
 import app from "../../index";
 
 const request = supertest(app);
+
 describe("API endpoint suite", (): void => {
   it("Should return a 200 OK status", async (): Promise<void> => {
     const response = await request.get("/api");
