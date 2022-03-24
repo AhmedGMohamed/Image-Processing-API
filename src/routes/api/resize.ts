@@ -1,10 +1,13 @@
 //importing the required libraries
 import express from "express";
-import sharp from "sharp";
 import fs from "fs";
 import { promises as fsPromises } from "fs";
 import path from "path";
-import { resizerWidthHeight, resizerWidth, resizerHeight } from "../../modules/resizer"
+import {
+  resizerWidthHeight,
+  resizerWidth,
+  resizerHeight
+} from "../../modules/resizer";
 
 const resizer = express.Router();
 
@@ -60,12 +63,13 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
             !isNaN(imgHeight) &&
             imgHeight > 0
           ) {
+            const filePath = `${path.resolve()}\\cache\\${fileName}-${imgWidth}x${imgHeight}.jpg`;
             /**
              * Checks if the image is already processed and is in the cache, if it's in the
              * cache it sends it to the user, otherwise it starts the resizing process.
              */
             fs.access(
-              `${path.resolve()}\\cache\\${fileName}-${imgWidth}x${imgHeight}.jpg`,
+              filePath,
               fs.constants.R_OK | fs.constants.W_OK,
               async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
@@ -73,9 +77,7 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
                   await resizerWidthHeight(fileName, imgWidth, imgHeight);
                 }
                 //Sending back the processed image to the user
-                res.sendFile(
-                  `${path.resolve()}\\cache\\${fileName}-${imgWidth}x${imgHeight}.jpg`
-                );
+                res.sendFile(filePath);
               }
             );
           } else if (
@@ -85,17 +87,20 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
             imgWidth > 0 &&
             isNaN(imgHeight)
           ) {
+            const filePath = `${path.resolve()}\\cache\\${fileName}-${imgWidth}x_.jpg`;
+            /**
+             * Checks if the image is already processed and is in the cache, if it's in the
+             * cache it sends it to the user, otherwise it starts the resizing process.
+             */
             fs.access(
-              `${path.resolve()}\\cache\\${fileName}-${imgWidth}x_.jpg`,
+              filePath,
               fs.constants.R_OK | fs.constants.W_OK,
               async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
                   await resizerWidth(fileName, imgWidth);
                 }
                 //Sending back the processed image to the user
-                res.sendFile(
-                  `${path.resolve()}\\cache\\${fileName}-${imgWidth}x_.jpg`
-                );
+                res.sendFile(filePath);
               }
             );
           } else if (
@@ -105,16 +110,19 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
             !isNaN(imgHeight) &&
             imgHeight > 0
           ) {
+            const filePath = `${path.resolve()}\\cache\\${fileName}-_x${imgHeight}.jpg`;
+            /**
+             * Checks if the image is already processed and is in the cache, if it's in the
+             * cache it sends it to the user, otherwise it starts the resizing process.
+             */
             fs.access(
-              `${path.resolve()}\\cache\\${fileName}-_x${imgHeight}.jpg`,
+              filePath,
               fs.constants.R_OK | fs.constants.W_OK,
               async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
                   await resizerHeight(fileName, imgHeight);
                   //Sending back the processed image to the user
-                  res.sendFile(
-                    `${path.resolve()}\\cache\\${fileName}-_x${imgHeight}.jpg`
-                  );
+                  res.sendFile(filePath);
                 }
               }
             );
