@@ -63,7 +63,8 @@ resizer.get("/", function (req, res) {
         fs_1.default.access("".concat(path_1.default.resolve(), "\\src\\images\\").concat(fileName, ".jpg"), fs_1.default.constants.R_OK | fs_1.default.constants.W_OK, function (err) { return __awaiter(void 0, void 0, void 0, function () {
             var filePath_1, filePath_2, filePath_3;
             return __generator(this, function (_a) {
-                if (err) { //Sends an error to the user telling them to provide a correct file name
+                if (err) {
+                    //Sends an error to the user telling them to provide a correct file name
                     res
                         .status(400)
                         .send("Wrong filename given, please Input a valid filename using (name={fileName})" +
@@ -177,8 +178,10 @@ resizer.get("/", function (req, res) {
                             });
                         }); });
                     }
-                    else if (imgWidth <= 0 || imgHeight <= 0) { //Checks if the user provided invalid width and height inputs
-                        switch (imgWidth <= 0) { //Checks if the width was the invalid input, if it is, report to the user that the width is invalid, otherwise the height is invalid
+                    else if (imgWidth <= 0 || imgHeight <= 0) {
+                        //Checks if the user provided invalid width and height inputs
+                        switch (imgWidth <= 0 //Checks if the width was the invalid input, if it is, report to the user that the width is invalid, otherwise the height is invalid
+                        ) {
                             case true:
                                 res
                                     .status(400)
