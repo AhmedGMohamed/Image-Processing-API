@@ -29,7 +29,7 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
     fs.access(
       `${path.resolve()}\\src\\images\\${fileName}.jpg`,
       fs.constants.R_OK | fs.constants.W_OK,
-      async (err) => {
+      async (err: NodeJS.ErrnoException | null): Promise<void> => {
         if (err) {
           res.send("Wrong filename given, please Input a valid filename");
         } else {
@@ -40,7 +40,7 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
           fs.access(
             `${path.resolve()}\\cache\\`,
             fs.constants.R_OK | fs.constants.W_OK,
-            async (err) => {
+            async (err: NodeJS.ErrnoException | null): Promise<void> => {
               if (err) {
                 await fsPromises.mkdir(`${path.resolve()}\\cache\\`);
               }
@@ -59,7 +59,7 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
             fs.access(
               `${path.resolve()}\\cache\\${fileName}-${imgwidth}x${imgheight}.jpg`,
               fs.constants.R_OK | fs.constants.W_OK,
-              async (err) => {
+              async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
                   /**Using the sharp library to resize the image using width & height and storing
                    * the data in a buffer
@@ -93,7 +93,7 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
             fs.access(
               `${path.resolve()}\\cache\\${fileName}-${imgwidth}x_.jpg`,
               fs.constants.R_OK | fs.constants.W_OK,
-              async (err) => {
+              async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
                   /**Using the sharp library to resize the image using width & height
                    * and storing the data in a buffer
@@ -124,7 +124,7 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
             fs.access(
               `${path.resolve()}\\cache\\${fileName}-_x${imgheight}.jpg`,
               fs.constants.R_OK | fs.constants.W_OK,
-              async (err) => {
+              async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
                   //Using the sharp library to resize the image using width & height and storing the data in a buffer
                   const data: Buffer = await sharp(
