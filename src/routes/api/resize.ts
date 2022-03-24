@@ -4,6 +4,7 @@ import sharp from "sharp";
 import fs from "fs";
 import { promises as fsPromises } from "fs";
 import path from "path";
+import { resizerWidthHeight, resizerWidth, resizerHeight } from "../../modules/resizer"
 
 const resizer = express.Router();
 
@@ -17,13 +18,13 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
   /**
    * @description uses the sharp library to resize the image using user inputs
    * @param {string} fileName
-   * @param {number} imgwidth
-   * @param {number} imgheight
+   * @param {number} imgWidth
+   * @param {number} imgHeight
    **/
   const resize = (
     fileName: string,
-    imgwidth: number,
-    imgheight: number
+    imgWidth: number,
+    imgHeight: number
   ): void => {
     //Checks if the user gave a file name exists in the images folder
     fs.access(
@@ -31,8 +32,12 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
       fs.constants.R_OK | fs.constants.W_OK,
       async (err: NodeJS.ErrnoException | null): Promise<void> => {
         if (err) {
-          res.send(400).send("Wrong filename given, please Input a valid filename using (name={fileName})" +
-            " where {fileName} is the name of your file without the extension");
+          res
+            .status(400)
+            .send(
+              "Wrong filename given, please Input a valid filename using (name={fileName})" +
+                " where {fileName} is the name of your file without the extension"
+            );
         } else {
           /**
            * Checks if the cache folder exists, if it does, it proceeds to
@@ -50,108 +55,84 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
           //Checks if the file name, width and height are all present in the query and with the correct values
           if (
             typeof fileName === "string" &&
-            (!isNaN(imgwidth) && imgwidth > 0) &&
-            (!isNaN(imgheight) && imgheight > 0)
+            !isNaN(imgWidth) &&
+            imgWidth > 0 &&
+            !isNaN(imgHeight) &&
+            imgHeight > 0
           ) {
             /**
              * Checks if the image is already processed and is in the cache, if it's in the
              * cache it sends it to the user, otherwise it starts the resizing process.
              */
             fs.access(
-              `${path.resolve()}\\cache\\${fileName}-${imgwidth}x${imgheight}.jpg`,
+              `${path.resolve()}\\cache\\${fileName}-${imgWidth}x${imgHeight}.jpg`,
               fs.constants.R_OK | fs.constants.W_OK,
               async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
-                  /**Using the sharp library to resize the image using width & height and storing
-                   * the data in a buffer
-                   **/
-                  const data: Buffer = await sharp(
-                    `${path.resolve()}\\src\\images\\${fileName}.jpg`
-                  )
-                    .resize({
-                      width: imgwidth,
-                      height: imgheight
-                    })
-                    .toBuffer();
-                  //Creating a jpg file and storing the data from the buffer in it
-                  await fsPromises.writeFile(
-                    `${path.resolve()}\\cache\\${fileName}-${imgwidth}x${imgheight}.jpg`,
-                    data
-                  );
+                  //Calls the function that does the resizing
+                  await resizerWidthHeight(fileName, imgWidth, imgHeight);
                 }
                 //Sending back the processed image to the user
                 res.sendFile(
-                  `${path.resolve()}\\cache\\${fileName}-${imgwidth}x${imgheight}.jpg`
+                  `${path.resolve()}\\cache\\${fileName}-${imgWidth}x${imgHeight}.jpg`
                 );
               }
             );
           } else if (
             //Checks if the file name and width only are present in the query
             typeof fileName === "string" &&
-            !isNaN(imgwidth) &&
-            isNaN(imgheight)
+            !isNaN(imgWidth) &&
+            imgWidth > 0 &&
+            isNaN(imgHeight)
           ) {
             fs.access(
-              `${path.resolve()}\\cache\\${fileName}-${imgwidth}x_.jpg`,
+              `${path.resolve()}\\cache\\${fileName}-${imgWidth}x_.jpg`,
               fs.constants.R_OK | fs.constants.W_OK,
               async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
-                  /**Using the sharp library to resize the image using width & height
-                   * and storing the data in a buffer
-                   **/
-                  const data: Buffer = await sharp(
-                    `${path.resolve()}\\src\\images\\${fileName}.jpg`
-                  )
-                    .resize({ width: imgwidth })
-                    .toBuffer();
-                  //Creating a jpg file and storing the data from the buffer in it
-                  await fsPromises.writeFile(
-                    `${path.resolve()}\\cache\\${fileName}-${imgwidth}x_.jpg`,
-                    data
-                  );
+                  await resizerWidth(fileName, imgWidth);
                 }
                 //Sending back the processed image to the user
                 res.sendFile(
-                  `${path.resolve()}\\cache\\${fileName}-${imgwidth}x_.jpg`
+                  `${path.resolve()}\\cache\\${fileName}-${imgWidth}x_.jpg`
                 );
               }
             );
           } else if (
             //checks if the file name and height only are present in the query
             typeof fileName === "string" &&
-            isNaN(imgwidth) &&
-            !isNaN(imgheight)
+            isNaN(imgWidth) &&
+            !isNaN(imgHeight) &&
+            imgHeight > 0
           ) {
             fs.access(
-              `${path.resolve()}\\cache\\${fileName}-_x${imgheight}.jpg`,
+              `${path.resolve()}\\cache\\${fileName}-_x${imgHeight}.jpg`,
               fs.constants.R_OK | fs.constants.W_OK,
               async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
-                  //Using the sharp library to resize the image using width & height and storing the data in a buffer
-                  const data: Buffer = await sharp(
-                    `${path.resolve()}\\src\\images\\${fileName}.jpg`
-                  )
-                    .resize({ height: imgheight })
-                    .toBuffer();
-                  //Creating a jpg file and storing the data from the buffer in it
-                  await fsPromises.writeFile(
-                    `${path.resolve()}\\cache\\${fileName}-_x${imgheight}.jpg`,
-                    data
+                  await resizerHeight(fileName, imgHeight);
+                  //Sending back the processed image to the user
+                  res.sendFile(
+                    `${path.resolve()}\\cache\\${fileName}-_x${imgHeight}.jpg`
                   );
                 }
-                //Sending back the processed image to the user
-                res.sendFile(
-                  `${path.resolve()}\\cache\\${fileName}-_x${imgheight}.jpg`
-                );
               }
             );
-          } else if (imgwidth <= 0 || imgheight <= 0) {
-            switch (imgwidth <= 0) {
+          } else if (imgWidth <= 0 || imgHeight <= 0) {
+            switch (imgWidth <= 0) {
               case true:
-                res.status(400).send("Invalid width given, please include a width higher than zero.");
+                res
+                  .status(400)
+                  .send(
+                    "Invalid width given, please include a width higher than zero."
+                  );
                 break;
               case false:
-                res.status(400).send("Invalid height given, please include a height higher than zero.");
+                res
+                  .status(400)
+                  .send(
+                    "Invalid height given, please include a height higher than zero."
+                  );
                 break;
               default:
                 res.status(400).send("Unknown error");
@@ -159,10 +140,12 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
             }
           } else {
             //sends a respond to the user stating that some query inputs are missing
-            res.status(400).send(
-              'Incorrect query parameters, Please include the file name (using "name = {string}")' +
-                '& either width (using "width={number}") or height (using "height={number}") or both.'
-            );
+            res
+              .status(400)
+              .send(
+                'Incorrect query parameters, Please include the file name (using "name = {string}")' +
+                  '& either width (using "width={number}") or height (using "height={number}") or both.'
+              );
           }
         }
       }

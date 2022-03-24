@@ -59,11 +59,12 @@ resizer.get("/", function (req, res) {
      * @param {number} imgheight
      **/
     var resize = function (fileName, imgwidth, imgheight) {
-        //Checks if the given file name exists in the images folder
+        //Checks if the user gave a file name exists in the images folder
         fs_1.default.access("".concat(path_1.default.resolve(), "\\src\\images\\").concat(fileName, ".jpg"), fs_1.default.constants.R_OK | fs_1.default.constants.W_OK, function (err) { return __awaiter(void 0, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 if (err) {
-                    res.send("Wrong filename given, please Input a valid filename");
+                    res.send(400).send("Wrong filename given, please Input a valid filename using (name={fileName})" +
+                        " where {fileName} is the name of your file without the extension");
                 }
                 else {
                     /**
@@ -83,10 +84,10 @@ resizer.get("/", function (req, res) {
                             }
                         });
                     }); });
-                    //Checks if the file name, width and height are all present in the query
+                    //Checks if the file name, width and height are all present in the query and with the correct values
                     if (typeof fileName === "string" &&
-                        !isNaN(imgwidth) &&
-                        !isNaN(imgheight)) {
+                        (!isNaN(imgwidth) && imgwidth > 0) &&
+                        (!isNaN(imgheight) && imgheight > 0)) {
                         /**
                          * Checks if the image is already processed and is in the cache, if it's in the
                          * cache it sends it to the user, otherwise it starts the resizing process.
@@ -179,9 +180,22 @@ resizer.get("/", function (req, res) {
                             });
                         }); });
                     }
+                    else if (imgwidth <= 0 || imgheight <= 0) {
+                        switch (imgwidth <= 0) {
+                            case true:
+                                res.status(400).send("Invalid width given, please include a width higher than zero.");
+                                break;
+                            case false:
+                                res.status(400).send("Invalid height given, please include a height higher than zero.");
+                                break;
+                            default:
+                                res.status(400).send("Unknown error");
+                                break;
+                        }
+                    }
                     else {
                         //sends a respond to the user stating that some query inputs are missing
-                        res.send('Incorrect query parameters, Please include the file name (using "name = {string}")' +
+                        res.status(400).send('Incorrect query parameters, Please include the file name (using "name = {string}")' +
                             '& either width (using "width={number}") or height (using "height={number}") or both.');
                     }
                 }
