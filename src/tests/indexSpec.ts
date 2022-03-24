@@ -4,16 +4,16 @@ import app from "../index";
 const request = supertest(app);
 
 //tests to check the main functionality of the app
-describe("Main server test suite", ():void => {
+describe("Main server test suite", (): void => {
   it("Should return a 200 OK status", async () => {
     const response = await request.get("/");
     expect(response.status).toBe(200);
   });
-  it("Should send response message", async ():Promise<void> => {
+  it("Should send response message", async (): Promise<void> => {
     const response = await request.get("/");
     expect(response.text).toBe("Main page visited");
   });
-  it("Should respond with a 404 not found status", async ():Promise<void> => {
+  it("Should respond with a 404 not found status", async (): Promise<void> => {
     const response = await request.get("/non-existent-api");
     expect(response.status).toBe(404);
   });
