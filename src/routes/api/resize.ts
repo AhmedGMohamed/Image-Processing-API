@@ -34,7 +34,7 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
       `${path.resolve()}\\src\\images\\${fileName}.jpg`,
       fs.constants.R_OK | fs.constants.W_OK,
       async (err: NodeJS.ErrnoException | null): Promise<void> => {
-        if (err) {
+        if (err) { //Sends an error to the user telling them to provide a correct file name
           res
             .status(400)
             .send(
@@ -65,15 +65,15 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
           ) {
             const filePath = `${path.resolve()}\\cache\\${fileName}-${imgWidth}x${imgHeight}.jpg`;
             /**
-             * Checks if the image is already processed and is in the cache, if it's in the
-             * cache it sends it to the user, otherwise it starts the resizing process.
+             * Checks if the image is already processed and is in the cache folder, if it's
+             * in the cache it sends it to the user, otherwise it starts the resizing process.
              */
             fs.access(
               filePath,
               fs.constants.R_OK | fs.constants.W_OK,
               async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
-                  //Calls the function that does the resizing
+                  //Calls the function that does the resizing using the file name, width & height
                   await resizerWidthHeight(fileName, imgWidth, imgHeight);
                 }
                 //Sending back the processed image to the user
@@ -97,6 +97,7 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
               fs.constants.R_OK | fs.constants.W_OK,
               async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
+                  //calling the function that does the resizing with the file name and width only
                   await resizerWidth(fileName, imgWidth);
                 }
                 //Sending back the processed image to the user
@@ -120,14 +121,15 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
               fs.constants.R_OK | fs.constants.W_OK,
               async (err: NodeJS.ErrnoException | null): Promise<void> => {
                 if (err) {
+                  //calling the function that does the resizing with the file name and height
                   await resizerHeight(fileName, imgHeight);
-                  //Sending back the processed image to the user
-                  res.sendFile(filePath);
                 }
+                //Sending back the processed image to the user
+                res.sendFile(filePath);
               }
             );
-          } else if (imgWidth <= 0 || imgHeight <= 0) {
-            switch (imgWidth <= 0) {
+          } else if (imgWidth <= 0 || imgHeight <= 0) { //Checks if the user provided invalid width and height inputs
+            switch (imgWidth <= 0) { //Checks if the width was the invalid input, if it is, report to the user that the width is invalid, otherwise the height is invalid
               case true:
                 res
                   .status(400)
