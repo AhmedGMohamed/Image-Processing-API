@@ -3,7 +3,7 @@ import app from "../../../index";
 
 const request = supertest(app);
 
-describe("resize api test suite", (): void => {
+describe("Resize API test suite", (): void => {
   it("Should return with 400 Invalid parameters status code.", async (): Promise<void> => {
     const response = await request.get("/api/resize");
     expect(response.statusCode).toBe(400);
