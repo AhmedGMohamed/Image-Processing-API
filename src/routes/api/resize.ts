@@ -25,13 +25,14 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
     imgwidth: number,
     imgheight: number
   ): void => {
-    //Checks if the given file name exists in the images folder
+    //Checks if the user gave a file name exists in the images folder
     fs.access(
       `${path.resolve()}\\src\\images\\${fileName}.jpg`,
       fs.constants.R_OK | fs.constants.W_OK,
       async (err: NodeJS.ErrnoException | null): Promise<void> => {
         if (err) {
-          res.send("Wrong filename given, please Input a valid filename");
+          res.send(400).send("Wrong filename given, please Input a valid filename using (name={fileName})" +
+            " where {fileName} is the name of your file without the extension");
         } else {
           /**
            * Checks if the cache folder exists, if it does, it proceeds to
@@ -49,8 +50,8 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
           //Checks if the file name, width and height are all present in the query
           if (
             typeof fileName === "string" &&
-            !isNaN(imgwidth) &&
-            !isNaN(imgheight)
+            (!isNaN(imgwidth) && imgwidth > 0) &&
+            (!isNaN(imgheight) && imgheight > 0)
           ) {
             /**
              * Checks if the image is already processed and is in the cache, if it's in the
@@ -144,9 +145,21 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
                 );
               }
             );
+          } else if (imgwidth <= 0 || imgheight <= 0) {
+            switch (imgwidth <= 0) {
+              case true:
+                res.status(400).send("Invalid width given, please include a width higher than zero.");
+                break;
+              case false:
+                res.status(400).send("Invalid height given, please include a height higher than zero.");
+                break;
+              default:
+                res.status(400).send("Unknown error");
+                break;
+            }
           } else {
             //sends a respond to the user stating that some query inputs are missing
-            res.send(
+            res.status(400).send(
               'Incorrect query parameters, Please include the file name (using "name = {string}")' +
                 '& either width (using "width={number}") or height (using "height={number}") or both.'
             );
