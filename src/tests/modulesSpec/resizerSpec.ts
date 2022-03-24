@@ -14,7 +14,7 @@ describe("Image processing Module testing suite", () => {
       //Checks if it can read the file, if not, it returns an error
       filePath,
       fs.constants.R_OK,
-      async (err: NodeJS.ErrnoException | null) => {
+      async (err: NodeJS.ErrnoException | null): Promise<void>=> {
         if (err) {
           errorExists = true;
         } else errorExists = false;
@@ -30,7 +30,7 @@ describe("Image processing Module testing suite", () => {
       //Checks if it can read the file, if not, it returns an error
       filePath,
       fs.constants.R_OK,
-      async (err: NodeJS.ErrnoException | null) => {
+      async (err: NodeJS.ErrnoException | null): Promise<void>=> {
         if (err) {
           errorExists = true;
         } else errorExists = false;
@@ -39,14 +39,14 @@ describe("Image processing Module testing suite", () => {
     expect(errorExists).toBe(false);
   });
   it("Should Create a file containing an image after providing file name and height only.", () => {
-    let errorExists: boolean = false;
+    let errorExists = false;
     const filePath = `${path.resolve()}\\cache\\santamonica-_x500.jpg`;
     resizerHeight("santamonica", 500);
     fs.access(
       //Checks if it can read the file, if not, it returns an error
       filePath,
       fs.constants.R_OK,
-      async (err: NodeJS.ErrnoException | null) => {
+      async (err: NodeJS.ErrnoException | null): Promise<void>=> {
         if (err) {
           errorExists = true;
         } else errorExists = false;
