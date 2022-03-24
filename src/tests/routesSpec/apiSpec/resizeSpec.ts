@@ -33,4 +33,12 @@ describe("resize api test suite", (): void => {
     const response = await request.get("/api/resize?name=fjord");
     expect(response.body instanceof Buffer).toBe(false);
   });
+  it("Should respond with 400 invalid parameters status code if supplied with anything other than a number in width", async (): Promise<void> => {
+    const response = await request.get("/api/resize?name=fjord&width=a");
+    expect(response.statusCode).toBe(400);
+  });
+  it("Should respond with 400 invalid parameters status code if supplied with anything other than a number in height", async (): Promise<void> => {
+    const response = await request.get("/api/resize?name=fjord&height=a");
+    expect(response.statusCode).toBe(400);
+  });
 });

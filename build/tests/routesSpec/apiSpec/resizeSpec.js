@@ -116,4 +116,28 @@ describe("resize api test suite", function () {
             }
         });
     }); });
+    it("Should respond with 400 invalid parameters status code if supplied with anything other than a number in width", function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, request.get("/api/resize?name=fjord&width=a")];
+                case 1:
+                    response = _a.sent();
+                    expect(response.statusCode).toBe(400);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    it("Should respond with 400 invalid parameters status code if supplied with anything other than a number in height", function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, request.get("/api/resize?name=fjord&height=a")];
+                case 1:
+                    response = _a.sent();
+                    expect(response.statusCode).toBe(400);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
 });
