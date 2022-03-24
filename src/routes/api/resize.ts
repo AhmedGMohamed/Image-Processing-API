@@ -47,7 +47,7 @@ resizer.get("/", (req: express.Request, res: express.Response): void => {
               }
             }
           );
-          //Checks if the file name, width and height are all present in the query
+          //Checks if the file name, width and height are all present in the query and with the correct values
           if (
             typeof fileName === "string" &&
             (!isNaN(imgwidth) && imgwidth > 0) &&
