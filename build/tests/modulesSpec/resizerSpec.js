@@ -97,9 +97,4 @@ describe("Image processing Module testing suite", function () {
         }); });
         expect(errorExists).toBe(false);
     });
-    it("Should return an error if an incorrect file name is provided with correct width and height", function () {
-        var errorExists = false;
-        var filePath = "".concat(path_1.default.resolve(), "\\cache\\non-existent-file-500x500.jpg");
-        expect((0, resizer_1.resizerHeight)("santamonica", 500)).toThrowError();
-    });
 });
