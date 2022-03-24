@@ -41,10 +41,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //importing the required libraries
 var express_1 = __importDefault(require("express"));
-var sharp_1 = __importDefault(require("sharp"));
 var fs_1 = __importDefault(require("fs"));
 var fs_2 = require("fs");
 var path_1 = __importDefault(require("path"));
+var resizer_1 = require("../../modules/resizer");
 var resizer = express_1.default.Router();
 resizer.get("/", function (req, res) {
     //storing the request query and getting the values
@@ -55,15 +55,18 @@ resizer.get("/", function (req, res) {
     /**
      * @description uses the sharp library to resize the image using user inputs
      * @param {string} fileName
-     * @param {number} imgwidth
-     * @param {number} imgheight
+     * @param {number} imgWidth
+     * @param {number} imgHeight
      **/
-    var resize = function (fileName, imgwidth, imgheight) {
+    var resize = function (fileName, imgWidth, imgHeight) {
         //Checks if the user gave a file name exists in the images folder
         fs_1.default.access("".concat(path_1.default.resolve(), "\\src\\images\\").concat(fileName, ".jpg"), fs_1.default.constants.R_OK | fs_1.default.constants.W_OK, function (err) { return __awaiter(void 0, void 0, void 0, function () {
+            var filePath_1, filePath_2, filePath_3;
             return __generator(this, function (_a) {
-                if (err) {
-                    res.send(400).send("Wrong filename given, please Input a valid filename using (name={fileName})" +
+                if (err) { //Sends an error to the user telling them to provide a correct file name
+                    res
+                        .status(400)
+                        .send("Wrong filename given, please Input a valid filename using (name={fileName})" +
                         " where {fileName} is the name of your file without the extension");
                 }
                 else {
@@ -86,35 +89,29 @@ resizer.get("/", function (req, res) {
                     }); });
                     //Checks if the file name, width and height are all present in the query and with the correct values
                     if (typeof fileName === "string" &&
-                        (!isNaN(imgwidth) && imgwidth > 0) &&
-                        (!isNaN(imgheight) && imgheight > 0)) {
+                        !isNaN(imgWidth) &&
+                        imgWidth > 0 &&
+                        !isNaN(imgHeight) &&
+                        imgHeight > 0) {
+                        filePath_1 = "".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-").concat(imgWidth, "x").concat(imgHeight, ".jpg");
                         /**
-                         * Checks if the image is already processed and is in the cache, if it's in the
-                         * cache it sends it to the user, otherwise it starts the resizing process.
+                         * Checks if the image is already processed and is in the cache folder, if it's
+                         * in the cache it sends it to the user, otherwise it starts the resizing process.
                          */
-                        fs_1.default.access("".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-").concat(imgwidth, "x").concat(imgheight, ".jpg"), fs_1.default.constants.R_OK | fs_1.default.constants.W_OK, function (err) { return __awaiter(void 0, void 0, void 0, function () {
-                            var data;
+                        fs_1.default.access(filePath_1, fs_1.default.constants.R_OK | fs_1.default.constants.W_OK, function (err) { return __awaiter(void 0, void 0, void 0, function () {
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
-                                        if (!err) return [3 /*break*/, 3];
-                                        return [4 /*yield*/, (0, sharp_1.default)("".concat(path_1.default.resolve(), "\\src\\images\\").concat(fileName, ".jpg"))
-                                                .resize({
-                                                width: imgwidth,
-                                                height: imgheight
-                                            })
-                                                .toBuffer()];
+                                        if (!err) return [3 /*break*/, 2];
+                                        //Calls the function that does the resizing using the file name, width & height
+                                        return [4 /*yield*/, (0, resizer_1.resizerWidthHeight)(fileName, imgWidth, imgHeight)];
                                     case 1:
-                                        data = _a.sent();
-                                        //Creating a jpg file and storing the data from the buffer in it
-                                        return [4 /*yield*/, fs_2.promises.writeFile("".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-").concat(imgwidth, "x").concat(imgheight, ".jpg"), data)];
-                                    case 2:
-                                        //Creating a jpg file and storing the data from the buffer in it
+                                        //Calls the function that does the resizing using the file name, width & height
                                         _a.sent();
-                                        _a.label = 3;
-                                    case 3:
+                                        _a.label = 2;
+                                    case 2:
                                         //Sending back the processed image to the user
-                                        res.sendFile("".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-").concat(imgwidth, "x").concat(imgheight, ".jpg"));
+                                        res.sendFile(filePath_1);
                                         return [2 /*return*/];
                                 }
                             });
@@ -123,28 +120,28 @@ resizer.get("/", function (req, res) {
                     else if (
                     //Checks if the file name and width only are present in the query
                     typeof fileName === "string" &&
-                        !isNaN(imgwidth) &&
-                        isNaN(imgheight)) {
-                        fs_1.default.access("".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-").concat(imgwidth, "x_.jpg"), fs_1.default.constants.R_OK | fs_1.default.constants.W_OK, function (err) { return __awaiter(void 0, void 0, void 0, function () {
-                            var data;
+                        !isNaN(imgWidth) &&
+                        imgWidth > 0 &&
+                        isNaN(imgHeight)) {
+                        filePath_2 = "".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-").concat(imgWidth, "x_.jpg");
+                        /**
+                         * Checks if the image is already processed and is in the cache, if it's in the
+                         * cache it sends it to the user, otherwise it starts the resizing process.
+                         */
+                        fs_1.default.access(filePath_2, fs_1.default.constants.R_OK | fs_1.default.constants.W_OK, function (err) { return __awaiter(void 0, void 0, void 0, function () {
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
-                                        if (!err) return [3 /*break*/, 3];
-                                        return [4 /*yield*/, (0, sharp_1.default)("".concat(path_1.default.resolve(), "\\src\\images\\").concat(fileName, ".jpg"))
-                                                .resize({ width: imgwidth })
-                                                .toBuffer()];
+                                        if (!err) return [3 /*break*/, 2];
+                                        //calling the function that does the resizing with the file name and width only
+                                        return [4 /*yield*/, (0, resizer_1.resizerWidth)(fileName, imgWidth)];
                                     case 1:
-                                        data = _a.sent();
-                                        //Creating a jpg file and storing the data from the buffer in it
-                                        return [4 /*yield*/, fs_2.promises.writeFile("".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-").concat(imgwidth, "x_.jpg"), data)];
-                                    case 2:
-                                        //Creating a jpg file and storing the data from the buffer in it
+                                        //calling the function that does the resizing with the file name and width only
                                         _a.sent();
-                                        _a.label = 3;
-                                    case 3:
+                                        _a.label = 2;
+                                    case 2:
                                         //Sending back the processed image to the user
-                                        res.sendFile("".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-").concat(imgwidth, "x_.jpg"));
+                                        res.sendFile(filePath_2);
                                         return [2 /*return*/];
                                 }
                             });
@@ -153,40 +150,44 @@ resizer.get("/", function (req, res) {
                     else if (
                     //checks if the file name and height only are present in the query
                     typeof fileName === "string" &&
-                        isNaN(imgwidth) &&
-                        !isNaN(imgheight)) {
-                        fs_1.default.access("".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-_x").concat(imgheight, ".jpg"), fs_1.default.constants.R_OK | fs_1.default.constants.W_OK, function (err) { return __awaiter(void 0, void 0, void 0, function () {
-                            var data;
+                        isNaN(imgWidth) &&
+                        !isNaN(imgHeight) &&
+                        imgHeight > 0) {
+                        filePath_3 = "".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-_x").concat(imgHeight, ".jpg");
+                        /**
+                         * Checks if the image is already processed and is in the cache, if it's in the
+                         * cache it sends it to the user, otherwise it starts the resizing process.
+                         */
+                        fs_1.default.access(filePath_3, fs_1.default.constants.R_OK | fs_1.default.constants.W_OK, function (err) { return __awaiter(void 0, void 0, void 0, function () {
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
-                                        if (!err) return [3 /*break*/, 3];
-                                        return [4 /*yield*/, (0, sharp_1.default)("".concat(path_1.default.resolve(), "\\src\\images\\").concat(fileName, ".jpg"))
-                                                .resize({ height: imgheight })
-                                                .toBuffer()];
+                                        if (!err) return [3 /*break*/, 2];
+                                        //calling the function that does the resizing with the file name and height
+                                        return [4 /*yield*/, (0, resizer_1.resizerHeight)(fileName, imgHeight)];
                                     case 1:
-                                        data = _a.sent();
-                                        //Creating a jpg file and storing the data from the buffer in it
-                                        return [4 /*yield*/, fs_2.promises.writeFile("".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-_x").concat(imgheight, ".jpg"), data)];
-                                    case 2:
-                                        //Creating a jpg file and storing the data from the buffer in it
+                                        //calling the function that does the resizing with the file name and height
                                         _a.sent();
-                                        _a.label = 3;
-                                    case 3:
+                                        _a.label = 2;
+                                    case 2:
                                         //Sending back the processed image to the user
-                                        res.sendFile("".concat(path_1.default.resolve(), "\\cache\\").concat(fileName, "-_x").concat(imgheight, ".jpg"));
+                                        res.sendFile(filePath_3);
                                         return [2 /*return*/];
                                 }
                             });
                         }); });
                     }
-                    else if (imgwidth <= 0 || imgheight <= 0) {
-                        switch (imgwidth <= 0) {
+                    else if (imgWidth <= 0 || imgHeight <= 0) { //Checks if the user provided invalid width and height inputs
+                        switch (imgWidth <= 0) { //Checks if the width was the invalid input, if it is, report to the user that the width is invalid, otherwise the height is invalid
                             case true:
-                                res.status(400).send("Invalid width given, please include a width higher than zero.");
+                                res
+                                    .status(400)
+                                    .send("Invalid width given, please include a width higher than zero.");
                                 break;
                             case false:
-                                res.status(400).send("Invalid height given, please include a height higher than zero.");
+                                res
+                                    .status(400)
+                                    .send("Invalid height given, please include a height higher than zero.");
                                 break;
                             default:
                                 res.status(400).send("Unknown error");
@@ -195,7 +196,9 @@ resizer.get("/", function (req, res) {
                     }
                     else {
                         //sends a respond to the user stating that some query inputs are missing
-                        res.status(400).send('Incorrect query parameters, Please include the file name (using "name = {string}")' +
+                        res
+                            .status(400)
+                            .send('Incorrect query parameters, Please include the file name (using "name = {string}")' +
                             '& either width (using "width={number}") or height (using "height={number}") or both.');
                     }
                 }

@@ -43,7 +43,7 @@ var supertest_1 = __importDefault(require("supertest"));
 var index_1 = __importDefault(require("../../index"));
 var request = (0, supertest_1.default)(index_1.default);
 describe("API endpoint suite", function () {
-    it("Should return a 200 OK status", function () { return __awaiter(void 0, void 0, void 0, function () {
+    it("Should return a 200 OK status.", function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -55,7 +55,7 @@ describe("API endpoint suite", function () {
             }
         });
     }); });
-    it("Should send a non empty response", function () { return __awaiter(void 0, void 0, void 0, function () {
+    it("Should send a non empty response.", function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {

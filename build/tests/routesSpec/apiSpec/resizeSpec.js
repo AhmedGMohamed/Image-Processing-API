@@ -43,31 +43,32 @@ var supertest_1 = __importDefault(require("supertest"));
 var index_1 = __importDefault(require("../../../index"));
 var request = (0, supertest_1.default)(index_1.default);
 describe("resize api test suite", function () {
-    it("Should return with 200 OK status code", function () { return __awaiter(void 0, void 0, void 0, function () {
+    it("Should return with 400 Invalid parameters status code.", function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, request.get("/api/resize")];
                 case 1:
                     response = _a.sent();
-                    expect(response.statusCode).toBe(200);
+                    expect(response.statusCode).toBe(400);
                     return [2 /*return*/];
             }
         });
     }); });
-    it("Should send the specified response to the user", function () { return __awaiter(void 0, void 0, void 0, function () {
+    it("Should send the specified response to the user.", function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, request.get("/api/resize?name=fj&width=500")];
                 case 1:
                     response = _a.sent();
-                    expect(response.text).toBe("Wrong filename given, please Input a valid filename");
+                    expect(response.text).toBe("Wrong filename given, please Input a valid filename using (name={fileName})" +
+                        " where {fileName} is the name of your file without the extension");
                     return [2 /*return*/];
             }
         });
     }); });
-    it("Should respond with an image buffer if file name, width & height are provided", function () { return __awaiter(void 0, void 0, void 0, function () {
+    it("Should respond with an image buffer if file name, width & height are provided.", function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -79,7 +80,7 @@ describe("resize api test suite", function () {
             }
         });
     }); });
-    it("Should respond with an image buffer if file name and width only are provided", function () { return __awaiter(void 0, void 0, void 0, function () {
+    it("Should respond with an image buffer if file name and width only are provided.", function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -91,7 +92,7 @@ describe("resize api test suite", function () {
             }
         });
     }); });
-    it("Should respond with an image buffer if file name and height only are provided", function () { return __awaiter(void 0, void 0, void 0, function () {
+    it("Should respond with an image buffer if file name and height only are provided.", function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -103,7 +104,7 @@ describe("resize api test suite", function () {
             }
         });
     }); });
-    it("Should not respond with an image if file name was provided while neither width nor height are specified", function () { return __awaiter(void 0, void 0, void 0, function () {
+    it("Should not respond with an image if file name was provided while neither width nor height are specified.", function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
