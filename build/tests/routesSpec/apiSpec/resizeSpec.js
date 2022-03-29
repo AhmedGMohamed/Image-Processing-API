@@ -42,7 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var supertest_1 = __importDefault(require("supertest"));
 var index_1 = __importDefault(require("../../../index"));
 var request = (0, supertest_1.default)(index_1.default);
-describe("resize api test suite", function () {
+describe("Resize API test suite", function () {
     it("Should return with 400 Invalid parameters status code.", function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
