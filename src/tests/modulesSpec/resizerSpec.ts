@@ -14,7 +14,7 @@ describe("Image processing Module testing suite", () => {
       //Checks if it can read the file, if not, it returns an error
       filePath,
       fs.constants.R_OK,
-      async (err: NodeJS.ErrnoException | null): Promise<void>=> {
+      async (err: NodeJS.ErrnoException | null): Promise<void> => {
         if (err) {
           errorExists = true;
         } else errorExists = false;
@@ -30,7 +30,7 @@ describe("Image processing Module testing suite", () => {
       //Checks if it can read the file, if not, it returns an error
       filePath,
       fs.constants.R_OK,
-      async (err: NodeJS.ErrnoException | null): Promise<void>=> {
+      async (err: NodeJS.ErrnoException | null): Promise<void> => {
         if (err) {
           errorExists = true;
         } else errorExists = false;
@@ -46,7 +46,7 @@ describe("Image processing Module testing suite", () => {
       //Checks if it can read the file, if not, it returns an error
       filePath,
       fs.constants.R_OK,
-      async (err: NodeJS.ErrnoException | null): Promise<void>=> {
+      async (err: NodeJS.ErrnoException | null): Promise<void> => {
         if (err) {
           errorExists = true;
         } else errorExists = false;
